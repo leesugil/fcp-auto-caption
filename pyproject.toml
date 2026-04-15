@@ -1,0 +1,26 @@
+[project]
+name = "fcp-auto-caption"
+version = "0.0.1"
+authors = [
+  { name="Sugil Steve Lee", email="sugilmath@gmail.com" },
+]
+description = "Automatically generate captions on FCP projects."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+	"fcp-math>=0.0.3",
+	"fcp-io>=0.0.3",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "GPL-3.0-or-later"
+license-files = ["LICEN[CS]E*"]
+
+[project.urls]
+Homepage = "https://github.com/leesugil/fcp-auto-caption"
+Issues = "https://github.com/leesugil/fcp-auto-caption/issues"
+
+[project.scripts]
+fcp-auto-caption = "fcp_auto_caption.cli:main"
