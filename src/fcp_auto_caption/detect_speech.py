@@ -16,15 +16,16 @@ def merge_audio(filepath, prefix='yt_', debug=False):
     name = filepath.name
     output_filepath = parent / (prefix+name)
 
-    cmd = ['ffmpeg', '-i', filepath, '-filter_complex', '"[0:a:0][0:a:1]amix=inputs=2[aout]"', '-map', '0:v', '-map', '"[aout]"', '-c:v', 'copy', '-c:a', 'aac', output_filepath]
+    cmd = ['ffmpeg', '-i', filepath, '-filter_complex', '[0:a:0][0:a:1]amix=inputs=2[aout]', '-map', '0:v', '-map', '[aout]', '-c:v', 'copy', '-c:a', 'aac', output_filepath]
 
     if debug:
         print(f"merge_audio command to run: {cmd}")
 
     process = subprocess.run(
             cmd,
-            stderr=subprocess.PIPE,
-            stdout=subprocess.DEVNULL,
+            #stderr=subprocess.PIPE,
+            #stdout=subprocess.DEVNULL,
+            check=True,
             text=True
             )
     output = process.stderr
@@ -32,14 +33,14 @@ def merge_audio(filepath, prefix='yt_', debug=False):
     #return output
     print(f"⛙ Multitrack audio merge from {name} to {prefix+name} done!")
 
-def extract_audio(filepath, track, debug=False):
+def extract_audio(filepath, track, prefix='audio_only_', debug=False):
     """
     If track is specified, uses ffmpeg to create an m4a file of that track.
     Returns the audio file to work on transcribing.
     """
     output = filepath
 
-    if track:
+    if type(track) is int:
         filepath = Path(filepath)
         parent = filepath.parent
         stem = filepath.stem
@@ -51,8 +52,9 @@ def extract_audio(filepath, track, debug=False):
 
     process = subprocess.run(
             cmd,
-            stderr=subprocess.PIPE,
-            stdout=subprocess.DEVNULL,
+            #stderr=subprocess.PIPE,
+            #stdout=subprocess.DEVNULL,
+            check=True,
             text=True
             )
     output_stderr = process.stderr
@@ -74,13 +76,14 @@ def transcribe(filepath, model, language, debug=False):
 
     process = subprocess.run(
             cmd,
-            stderr=subprocess.PIPE,
-            stdout=subprocess.DEVNULL,
+            #stderr=subprocess.PIPE,
+            #stdout=subprocess.DEVNULL,
+            check=True,
             text=True
             )
-    output = process.stderr
+    #output = process.stderr
 
-    return output
+    #return output
 
 def translate(text, source_language='ko', target_language='en', debug=False):
     """

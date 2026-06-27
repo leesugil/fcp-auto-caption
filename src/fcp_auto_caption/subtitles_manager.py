@@ -1,3 +1,5 @@
+from pathlib import Path
+import shutil
 
 def move_to_subtitles():
     # moving resulting files from Whisper AI to a subfolder
@@ -7,7 +9,7 @@ def move_to_subtitles():
 
     extensions = ['*.json', '*.tsv', '*.srt', '*.vtt', '*.txt']
     for pattern in extensions:
-        for filepath in source_dir.glob(pattern):
+        for filepath in current_dir.glob(pattern):
             destination = target_dir / filepath.name
             shutil.move(str(filepath), str(destination))
             print(f"Moved: {filepath.name}")

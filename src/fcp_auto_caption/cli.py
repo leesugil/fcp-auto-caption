@@ -39,21 +39,21 @@ def main():
     # For a better result, you need a multitrack video with the speech to be transcribed separated from other music and effects. Say that's in [0:a:0]
     
     # First, YouTube doesn't understand multitrack audio, so create a mov file that mixes (merges) multi audio tracks
-    if args.track:
+    if args.track > -1:
         detect_speech.merge_audio(filepath=filepath, debug=args.debug)
 
     # Second, extract the audio track you want to transcribe.
-    af = detect_speech.extract_audio(filepath=filepath, track, track=args.track, debug=args.debug)
+    af = detect_speech.extract_audio(filepath=filepath, track=args.track, debug=args.debug)
 
     # Third, transcribe.
     detect_speech.transcribe(filepath=af, model=args.model, language=args.language, debug=args.debug)
 
-    manage_subtitles.move_to_subtitles()
+    subtitles_manager.move_to_subtitles()
     srt = Path(f'./subtitles/{af.stem}.srt').read_text(encoding='utf-8')
 
     # Fourth, improve the transcription.
     context = Path('./subtitles/context.md').read_text(encoding='utf-8')
-    srt = manage_subtitles.context_provision(srt=srt, context=context, debug=args.debug)
+    srt = subtitles_manager.context_provision(srt=srt, context=context, debug=args.debug)
 
     if args.save:
         filepath = Path(filepath)
@@ -68,16 +68,17 @@ def main():
             f.write(text)
 
     # If specified to translate the transcribed text, do it here.
-    for lang in args.translate:
-        translated_text = detect_speech.translate(text=text, source_language=args.language, target_language=lang, debug=args.debug)
-        translated_srt = subtitles_manager.txt2srt(txt=translated_text, srt=srt)
-        if args.save:
-            output = parent / (args.affix+name+f'_{lang}'+'.srt')
-            with open(f"{output}", 'w') as f:
-                f.write(translated_srt)
-            output = parent / (args.affix+name+f'_{lang}'+'.txt')
-            with open(f"{output}", 'w') as f:
-                f.write(translated_text)
+    if args.translate:
+        for lang in args.translate:
+            translated_text = detect_speech.translate(text=text, source_language=args.language, target_language=lang, debug=args.debug)
+            translated_srt = subtitles_manager.txt2srt(txt=translated_text, srt=srt)
+            if args.save:
+                output = parent / (args.affix+name+f'_{lang}'+'.srt')
+                with open(f"{output}", 'w') as f:
+                    f.write(translated_srt)
+                output = parent / (args.affix+name+f'_{lang}'+'.txt')
+                with open(f"{output}", 'w') as f:
+                    f.write(translated_text)
 
 if __name__ == "__main__":
     main()
